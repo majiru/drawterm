@@ -1,0 +1,35 @@
+name: windows build
+on: [push]
+jobs:
+  Build-i686:
+    runs-on: windows-latest
+    steps:
+      - run: git config --global core.autocrlf input
+      - name: Set up Cygwin
+        uses: cygwin/cygwin-install-action@master
+        with:
+          packages: mingw64-i686-gcc-core make
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Do build
+        env:
+          CONF: win32
+        run: |
+          cd ${{ github.workspace }}
+          make
+  Build-amd64:
+    runs-on: windows-latest
+    steps:
+      - run: git config --global core.autocrlf input
+      - name: Set up Cygwin
+        uses: cygwin/cygwin-install-action@master
+        with:
+          packages: mingw64-x86_64-gcc-core make
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Do build
+        env:
+          CONF: win64
+        run: |
+          cd ${{ github.workspace }}
+          make
