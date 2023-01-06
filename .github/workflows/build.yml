@@ -1,35 +1,39 @@
-name: windows build
+name: build
 on: [push]
 jobs:
-  Build-i686:
+  Build-Windows:
     runs-on: windows-latest
     steps:
       - run: git config --global core.autocrlf input
       - name: Set up Cygwin
         uses: cygwin/cygwin-install-action@master
         with:
-          packages: mingw64-i686-gcc-core make
+          packages: mingw64-i686-gcc-core mingw64-x86_64-gcc-core make
       - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Do build
+      - name: Build i686
         env:
           CONF: win32
         run: |
           cd ${{ github.workspace }}
           make
-  Build-amd64:
-    runs-on: windows-latest
-    steps:
-      - run: git config --global core.autocrlf input
-      - name: Set up Cygwin
-        uses: cygwin/cygwin-install-action@master
-        with:
-          packages: mingw64-x86_64-gcc-core make
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      - name: Do build
+          copy drawterm.exe drawterm-i686.exe
+          make clean
+      - name: Build amd64
         env:
           CONF: win64
         run: |
           cd ${{ github.workspace }}
           make
+          copy drawterm.exe drawterm-amd64.exe
+          make clean
+      - name: Upload i686
+        uses: actions/upload-artifact@v3
+        with:
+          name: drawterm-i686.exe
+          path: ${{ github.workspace }}/drawterm-i686.exe
+      - name: Upload amd64
+        uses: actions/upload-artifact@v3
+        with:
+          name: drawterm-amd64.exe
+          path: ${{ github.workspace }}/drawterm-amd64.exe
